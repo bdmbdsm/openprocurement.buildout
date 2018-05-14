@@ -1,0 +1,36 @@
+---
+plugins:
+  api: null
+  auctions.core:
+      plugins:
+      auctions.rubble.financial:
+        aliases: []
+        use_default: true
+        migration: false
+      auctions.rubble.other:
+        aliases: []
+        use_default: true
+        migration: false
+  assets.core:
+    plugins:
+      assets.bounce:
+        aliases: []
+        use_default: true
+        migration: false
+  lots.core:
+    plugins:
+      lots.loki:
+        aliases: []
+        use_default: true
+        migration: false
+config:
+  auth:
+    type: file
+    src: ${options['auth_file']}
+  database:
+    couchdb.db_name: ${options['couchdb_db']}
+    couchdb.url: ${options['couchdb_url']}
+{% if 'api_version' in options %}
+  main:
+    api_version: ${options['api_version']}
+{% end %}
