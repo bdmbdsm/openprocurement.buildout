@@ -27,4 +27,4 @@ install:
   - python2 bootstrap.py
 script:
   - bin/buildout -N
-  - bin/prequest -m GET etc/openprocurement.api.ini /api/2.4/spore
+  -  bin/prequest -d -m HEAD etc/openprocurement.api.ini /api/2.4/spore
