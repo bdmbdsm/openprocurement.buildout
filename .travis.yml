@@ -23,5 +23,4 @@ install:
   - python2 bootstrap.py
 script:
   - bin/buildout -N
-after_success:
-  - bin/coveralls
+  - bin/prequest -m GET etc/openprocurement.api.ini /api/2.4/spore
