@@ -25,8 +25,13 @@ plugins:
         migration: false
 config:
   auth:
+{% if 'auth_file' in options %}
     type: file
     src: ${options['auth_file']}
+{% end %}
+{% if not 'auth_file' in options %}
+    type: void
+{% end %}
   database:
     couchdb.db_name: ${options['couchdb_db']}
     couchdb.url: ${options['couchdb_url']}
