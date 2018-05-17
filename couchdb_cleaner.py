@@ -153,8 +153,8 @@ def delete(db, records):
     deleted_items = []
     for record in records:
         deleted_items.append(get_metadata(record))
+    print '{} records has been successfully deleted.'.format(len(deleted_items))
     db.purge(deleted_items)
-    print '{} records has been successfully deleted.'
     sys.exit(1)
 
 
