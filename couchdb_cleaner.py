@@ -73,7 +73,7 @@ def has_sub_query(query):
 
 
 def make_query(parameters):
-    """Build a main query for CoachDB
+    """Build a main query for CouchDB
     :param parameters: A dictionary object
     :return: An string representation of logical statement in javascript
 
@@ -111,7 +111,7 @@ def welcome_message():
 
 
 def make_database_connection(database_url):
-    """Connects to a CoachDB database
+    """Connects to a CouchDB database
     :param database_url: Database URL from app_meta.yaml file
     :return: an instance of database
 
