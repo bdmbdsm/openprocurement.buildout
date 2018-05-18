@@ -147,15 +147,17 @@ def delete(db, records):
     >>> delete(db, results)
     5 records has been successfully deleted.
     """
-    if not records:
-        print 'Records not found'
-        sys.exit(1)
     deleted_items = []
+
+    if not records:
+        print 'There is no elements with such values in attributes'
+        return False
+
     for record in records:
         deleted_items.append(get_metadata(record))
-    print '{} records has been successfully deleted.'.format(len(deleted_items))
+
     db.purge(deleted_items)
-    sys.exit(1)
+    return True
 
 
 def main():
@@ -164,12 +166,19 @@ def main():
     username = raw_input('Enter your admin username:').strip()
     password = raw_input('Enter your password:').strip()
     db = make_database_connection(make_database_url(username, password))
+    limit_query = raw_input('Enter a query limit: ').strip() or 100
     search_query = raw_input('Enter your query: ').strip()
 
     generated_query = make_query(convert_to_dict(search_query))
 
-    result = db.query(generated_query)
-    delete(db, result)
+    count = 0
+
+    while True:
+        result = db.query(generated_query, limit=int(limit_query))
+        count += len(result)
+        if not delete(db, result):
+            print '{} items deleted'.format(count)
+            break
 
 
 if __name__ == '__main__':
