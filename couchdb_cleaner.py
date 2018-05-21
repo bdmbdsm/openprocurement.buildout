@@ -1,5 +1,6 @@
 import ast
 import sys
+import collections
 from openprocurement.api.utils import read_yaml
 from couchdb.client import Server
 from couchdb.http import Unauthorized
@@ -20,26 +21,42 @@ def base_view(item):
     return 'function(doc) {if(%s) {emit(doc);}}' % item
 
 
-def make_statement(field, value, sub_key=None, sub_query=False):
-    """Returns string representation of a javascript object
-       and his property, and checks if a property is equal to a value
-    :param field: a property of a object
-    :param value: value which will be checked
-    :param sub_key: a sub property of a property
-    :param sub_query: if True, return key, and a sub key of object
-    :return: string representation of a javascript object and his keys
+def make_keys(parameters, parent_key='doc', sep='.'):
+    """Returns a dictionary with all nested keys
+       And their values
 
-    Example without subquery
-    >>> make_statement('_id', '12345')
-    doc._id == '12345'
+    :param parameters: A dictionary with information
+    :param parent_key: A string which you want to add to a key
+    :param sep: A separator, which will match an keys
+    :return: An dictionary, with keys or sub keys and their an values
 
-    Example with subquery
-    >>> make_statement('dog', 'Marti', 'pets', sub_query=True)
-    doc.pets.dog == 'Marti'
+    >>> data = {'lotType': {'type': {'commercial': {'shop': 'yes'}}}}
+    >>> make_keys(data)
+    {'doc.lotType.type.commercial.shop': 'yes'}
     """
-    if sub_query:
-        return "doc.{}.{} == '{}'".format(sub_key, field, value)
-    return "doc.{} == '{}'".format(field, value)
+    items = []
+    for k, v in parameters.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, collections.MutableMapping):
+            items.extend(make_keys(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+
+def make_query(query):
+    """Returns string representation of a query for CouchDB
+    :param query: A dictionary, with a information
+    :return: A string representation of a javascript logic statement
+
+    >>> data = {'lotType': {'type': {'commercial': {'shop': 'yes'}}}}
+    >>> make_query(data)
+    function(doc) {if(doc.doc.lotType.type.commercial.shop == 'yes') {emit(doc);}}
+    """
+    formatted_query = make_keys(query)
+    prepare_query = ["{} == '{}'".format(key, value) for key, value in formatted_query.items()]
+    output_query = base_view(' && '.join(prepare_query))
+    return output_query
 
 
 def convert_to_dict(data):
@@ -54,43 +71,9 @@ def convert_to_dict(data):
     return ast.literal_eval(data)
 
 
-def has_sub_query(query):
-    """Checks whether an keys, has a subquery
-    :param query: Checks whether an value of a key is a dictionary
-    :return: if value is a dictionary, returns True otherwise False
-     >>> my_dict = {'key': {'martin': True}}
-     >>> has_sub_query(my_dict)
-     True
-    """
-    if isinstance(query, dict):
-        return True
-    return False
-
-
-def make_query(parameters):
-    """Build a main query for CouchDB
-    :param parameters: A dictionary object
-    :return: An string representation of logical statement in javascript
-
-    >>> make_query({'doc_type': 'Lot', 'lotType' : {'procurement': 'ok', 'status': '200'}})
-    (doc.lotType.status == '200' && doc.lotType.procurement == 'ok' && doc.doc_type == 'Lot')
-    """
-    sub_query = []
-    for key in parameters.keys():
-        if has_sub_query(parameters[key]):
-            for k, v in parameters[key].items():
-                sub_query.append(make_statement(k, v, key, True))
-            parameters.pop(key)
-
-    prepare_query = [make_statement(k, v) for k, v in parameters.items()]
-    output = sub_query + prepare_query
-
-    return base_view(' && '.join(output))
-
-
 def get_metadata(obj):
     """Returns object's ID and REV keys
-    :param obj: A CoachDB object
+    :param obj: A CouchDB object
     :return: a dictionary with object's information
     """
     return {'_id': obj['id'], '_rev': obj['key']['_rev']}
@@ -133,7 +116,7 @@ def make_database_url(username, password):
 
 
 def delete(db, records):
-    """Delete records from CoachDB
+    """Delete records from CouchDB
     :param db: an instance of database
     :param records: an array with an records meta information
 
