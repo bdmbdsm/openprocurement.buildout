@@ -12,17 +12,12 @@ database_server = config['database']['couchdb.url']
 database_name = config['database']['couchdb.db_name']
 
 
-def base_view(items):
+def base_view(item):
     """Returns a javascript function for filtering records in database
-    :param items: An string representation of a logic statement in javascript
+    :param item: An string representation of a logic statement in javascript
     :return: An string representation of javascript function
     """
-    return '''function(doc) {
-         if(%s) {
-            emit(doc);
-         }
-     }
-''' % items
+    return 'function(doc) {if(%s) {emit(doc);}}' % item
 
 
 def make_statement(field, value, sub_key=None, sub_query=False):
@@ -90,8 +85,6 @@ def make_query(parameters):
     prepare_query = [make_statement(k, v) for k, v in parameters.items()]
     output = sub_query + prepare_query
 
-    if len(output) == 1:
-        return base_view(''.join(output))
     return base_view(' && '.join(output))
 
 
@@ -166,7 +159,7 @@ def main():
     username = raw_input('Enter your admin username:').strip()
     password = raw_input('Enter your password:').strip()
     db = make_database_connection(make_database_url(username, password))
-    limit_query = raw_input('Enter a query limit: ').strip() or 100
+    limit_query = raw_input('Enter a query limit(default is 100): ').strip() or 100
     search_query = raw_input('Enter your query: ').strip()
 
     generated_query = make_query(convert_to_dict(search_query))
