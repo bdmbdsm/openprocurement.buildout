@@ -1,6 +1,6 @@
-import ast
 import sys
 import collections
+import json
 from openprocurement.api.utils import read_yaml
 from couchdb.client import Server
 from couchdb.http import Unauthorized
@@ -59,18 +59,6 @@ def make_query(query):
     return output_query
 
 
-def convert_to_dict(data):
-    """Convert a string representation of dictionary
-       into python dictionary type
-    :param data: An string representation of a dictionary
-    :return: dictionary object
-
-    >>> convert_to_dict("{'_id': '1234'}")
-    {'_id': '1234'}
-    """
-    return ast.literal_eval(data)
-
-
 def get_metadata(obj):
     """Returns object's ID and REV keys
     :param obj: A CouchDB object
@@ -107,11 +95,10 @@ def make_database_url(username, password):
     :param password: A password of an admin
     :return: Database url
 
-    >>> make_database_url('rabbit', 'marti', 'localhost:5984')
+    >>> make_database_url('rabbit', 'martin')
     'http://rabbit:marti@localhost:5984'
     """
-    """Make a database url, with an user credentials"""
-    host = database_server.split('@')[1]
+    host = database_server.replace('http://', '').replace('/', '')
     return 'http://{}:{}@{}'.format(username, password, host)
 
 
@@ -144,8 +131,7 @@ def main():
     db = make_database_connection(make_database_url(username, password))
     limit_query = raw_input('Enter a query limit(default is 100): ').strip() or 100
     search_query = raw_input('Enter your query: ').strip()
-
-    generated_query = make_query(convert_to_dict(search_query))
+    generated_query = make_query(json.loads(search_query))
 
     count = 0
 
