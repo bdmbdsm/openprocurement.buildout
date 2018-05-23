@@ -31,7 +31,7 @@ config:
 {% end %}
 {% if not 'auth_file' in options %}
     type: void
-{% end %}.
+{% end %}
   db:
     type: couchdb
     db_name: ${options['couchdb_db']}
