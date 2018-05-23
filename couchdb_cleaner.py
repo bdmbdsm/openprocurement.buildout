@@ -7,10 +7,11 @@ from couchdb.http import Unauthorized
 
 
 APP_META = './etc/app_meta.yaml'
-config = read_yaml(APP_META)['config']
+config = read_yaml(APP_META)['config']['db']
 
-database_server = config['database']['couchdb.url']
-database_name = config['database']['couchdb.db_name']
+database_server = config['url']
+database_name = config['db_name']
+database_host = config['url']
 
 
 def base_view(item):
@@ -98,8 +99,7 @@ def make_database_url(username, password):
     >>> make_database_url('rabbit', 'martin')
     'http://rabbit:marti@localhost:5984'
     """
-    host = database_server.replace('http://', '').replace('/', '')
-    return 'http://{}:{}@{}'.format(username, password, host)
+    return 'http://{}:{}@{}'.format(username, password, database_host)
 
 
 def delete(db, records):
