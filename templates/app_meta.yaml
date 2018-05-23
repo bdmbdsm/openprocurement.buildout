@@ -31,10 +31,11 @@ config:
 {% end %}
 {% if not 'auth_file' in options %}
     type: void
-{% end %}
-  database:
-    couchdb.db_name: ${options['couchdb_db']}
-    couchdb.url: ${options['couchdb_url']}
+{% end %}.
+  db:
+    type: couchdb
+    db_name: ${options['couchdb_db']}
+    url: ${options['couchdb_url']}
 {% if 'api_version' in options %}
   main:
     api_version: ${options['api_version']}
