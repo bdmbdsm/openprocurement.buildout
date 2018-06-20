@@ -5,6 +5,12 @@ extends =
     profiles/test.cfg
     profiles/development.cfg
 
+[scripts]
+eggs +=
+    pyramid
+scripts +=
+    prequest
+
 # chronograph
 [openprocurement.api.ini]
 couchdb_db = test
