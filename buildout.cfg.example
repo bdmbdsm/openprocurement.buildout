@@ -8,6 +8,7 @@ extends =
 [scripts]
 eggs +=
     pyramid
+    repoze.profile
 scripts +=
     prequest
 
