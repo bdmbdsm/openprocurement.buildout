@@ -1,28 +1,93 @@
 ---
 plugins:
+  configurator: null
   api: null
+
+  transferring:
+    plugins:
+      auctions.transferring: null
+      lots.transferring: null
+      contracting.transferring: null
+
   auctions.core:
-      plugins:
+    plugins:
       auctions.rubble.financial:
-        aliases: []
         use_default: true
         migration: false
+        aliases: []
+        accreditation:
+          create: [1]
+          edit: [2]
+
       auctions.rubble.other:
+        use_default: true
+        migration: false
+        aliases: []
+        accreditation:
+          create: [1]
+          edit: [2]
+
+      auctions.swiftsure:
+        use_default: true
+        migration: false
+        aliases: []
+        accreditation:
+          create: [3]
+          edit: [4]
+
+      auctions.tessel:
+        use_default: true
+        migration: false
+        aliases: []
+        accreditation:
+          create: [3]
+          edit: [4]
+
+      auctions.lease:
         aliases: []
         use_default: true
         migration: false
+        accreditation:
+          create: [7]
+          edit: [8]
+
+      auctions.geb:
+        aliases: []
+        use_default: true
+        migration: false
+        accreditation:
+          create: [5]
+          edit: [6]
+
   assets.core:
     plugins:
       assets.bounce:
         aliases: []
         use_default: true
         migration: false
+        accreditation:
+          create: [3]
+          edit: [4]
+
   lots.core:
     plugins:
       lots.loki:
         aliases: []
         use_default: true
         migration: false
+        accreditation:
+          create: [3]
+          edit: [4]
+
+  contracting.core:
+    plugins:
+      contracting.ceasefire:
+        aliases: []
+        use_default: true
+        migration: false
+        accreditation:
+          create: [3]
+          edit: [4]
 config:
   auth:
 {% if 'auth_file' in options %}
