@@ -1,15 +1,15 @@
-all: listhosts
+all: bin
 
-build:
+bin:
 	python bootstrap.py
 	cp buildout.cfg.example buildout.cfg
 	bin/buildout -N
 
-upd_src: bin src
+upd_src: bin
 	bin/develop st
 	bin/develop up
 
-pin_sandbox: bin src
+pin_sandbox: bin
 	bin/python pinner.py
 	git show
 
