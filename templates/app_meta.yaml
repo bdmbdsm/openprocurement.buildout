@@ -59,6 +59,14 @@ plugins:
           create: [5]
           edit: [6]
 
+      auctions.appraisal:
+        aliases: []
+        use_default: true
+        migration: false
+        accreditation:
+          create: [7]
+          edit: [8]
+
   assets.core:
     plugins:
       assets.bounce:
@@ -78,7 +86,15 @@ plugins:
         accreditation:
           create: [3]
           edit: [4]
-
+{% if 'openregistry.lots.bargain' in parts.buildout['package-name'] %}
+      lots.bargain:
+        aliases: []
+        use_default: true
+        migration: false
+        accreditation:
+          create: [3]
+          edit: [4]
+{% end %}
   contracting.core:
     plugins:
       contracting.ceasefire:
