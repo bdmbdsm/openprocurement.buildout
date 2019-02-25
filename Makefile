@@ -15,6 +15,7 @@ pin_sandbox: bin
 
 push_to_ea2:
 	git push origin ea2_master
+	git push origin ea2_master --tags
 
 upd_pin:
 	make upd_src
